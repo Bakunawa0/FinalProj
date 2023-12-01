@@ -5,6 +5,34 @@ import java.awt.event.ActionListener;
 
 public class FinalProject extends JFrame {
     public FinalProject() {
-        
+        super("Cryptographical Program");
+        setSize(400, 300);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        // Create File Menu
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("File");
+        // options
+        JMenu textSubMenu = new JMenu("Text");
+        JMenuItem encryptItem = new JMenuItem("Encrypt");
+        JMenuItem decryptItem = new JMenuItem("Decrypt");
+        JMenuItem settingsItem = new JMenuItem("Settings");
+        JMenuItem exitItem = new JMenuItem("Exit");
+        // adding the options to the menu
+        textSubMenu.add(encryptItem);
+        textSubMenu.add(decryptItem);
+        fileMenu.add(textSubMenu);
+        fileMenu.add(settingsItem);
+        fileMenu.addSeparator();
+        fileMenu.add(exitItem);
+        // adding the menu to the frame
+        menuBar.add(fileMenu);
+        setJMenuBar(menuBar);
+
+        setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        FinalProject fp = new FinalProject();
     }
 }
