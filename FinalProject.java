@@ -80,7 +80,7 @@ class SettingsDialog extends JDialog {
                 } else {
                     // otherwise we show an error
                     JOptionPane.showConfirmDialog(parent, "Key must be alphabetic characters only", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
-                    keyField.setText(key);
+                    keyField.setText(key); // revert to the last key
                 }
             }
         });
