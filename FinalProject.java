@@ -29,6 +29,13 @@ public class FinalProject extends JFrame {
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
 
+        // make exit button do what it says
+        exitItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
         setVisible(true);
     }
 
