@@ -91,10 +91,13 @@ class SettingsDialog extends JDialog {
             }
         });
         
-        setLayout(new BorderLayout());
-        add(enDecLabel, BorderLayout.NORTH);
-        add(keyField, BorderLayout.CENTER);
-        add(saveButton, BorderLayout.LINE_END);
-        add(cancelButton, BorderLayout.SOUTH);
+        setLayout(new GridLayout(3, 1));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 2));
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+        add(enDecLabel);
+        add(keyField);
+        add(buttonPanel);
     }
 }
