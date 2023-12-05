@@ -38,6 +38,10 @@ public class FinalProject extends JFrame {
         // open encrypt menu
         encryptItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if (key.equals("")) {
+                    JOptionPane.showConfirmDialog(parent, "Please set a key in the \"Settings\" menu.", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 final EDWindow eDWindow = new EDWindow(parent, true, key);
                 eDWindow.setVisible(true);
             }
@@ -46,6 +50,10 @@ public class FinalProject extends JFrame {
         // open decrypt menu
         decryptItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                if (key.equals("")) {
+                    JOptionPane.showConfirmDialog(parent, "Please set a key in the \"Settings\" menu.", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 final EDWindow eDWindow = new EDWindow(parent, false, key);
                 eDWindow.setVisible(true);
             }
