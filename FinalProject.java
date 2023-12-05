@@ -32,10 +32,13 @@ public class FinalProject extends JFrame {
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
 
+        // Need to reference the parent of these UI components later
+        FinalProject parent = this;
+
         // settings option opens SettingsDialog
         settingsItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                final SettingsDialog settingsDialog = new SettingsDialog(null, key);
+                final SettingsDialog settingsDialog = new SettingsDialog(parent, key);
                 settingsDialog.setVisible(true);
             }
         });
