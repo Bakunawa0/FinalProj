@@ -104,6 +104,13 @@ class EDWindow extends JDialog {
         JTextField keyField = new JTextField(key);
         JButton eDButton = new JButton(encryptMode ? "Encrypt" : "Decrypt");
 
+        eDButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String newKey = keyField.getText();
+                int[] keyDigits = keyToNumbers(newKey);
+            }
+        });
+
         add(messageLabel);
         add(resultLabel);
         add(new JScrollPane(messageArea));
@@ -114,6 +121,22 @@ class EDWindow extends JDialog {
         add(new JSeparator());
         add(eDButton);
         setLayout(new GridLayout(0, 2));
+    }
+
+    // the first step of the encryption/decryption
+    public int[] keyToNumbers(String k) {
+        String rawDigits = "";
+        k = k.toUpperCase();
+        for (int letter : k.toCharArray()) {
+            rawDigits += letter - 64; // A = 65 in ASCII so we can't use the value directly, but if we subtract 65 then A would be 0, so we subtract 64
+        }
+        
+        int[] digits = new int[rawDigits.length()];
+        for (int i = 0; i < digits.length; i++) {
+            digits[i] = rawDigits.charAt(i) - '0';
+        }
+
+        return digits;
     }
 }
 
