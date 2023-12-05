@@ -105,7 +105,7 @@ class EDWindow extends JDialog {
         add(keyField);
         add(new JSeparator());
         add(eDButton);
-        setLayout(new GridLayout(0, 3));
+        setLayout(new GridLayout(0, 2));
     }
 }
 
