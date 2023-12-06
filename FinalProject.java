@@ -32,10 +32,13 @@ public class FinalProject extends JFrame {
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
 
+        // Need to reference the parent of these UI components later
+        FinalProject parent = this;
+
         // settings option opens SettingsDialog
         settingsItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                final SettingsDialog settingsDialog = new SettingsDialog(null, key);
+                final SettingsDialog settingsDialog = new SettingsDialog(parent, key);
                 settingsDialog.setVisible(true);
             }
         });
@@ -79,7 +82,7 @@ class SettingsDialog extends JDialog {
                     dispose();
                 } else {
                     // otherwise we show an error
-                    JOptionPane.showConfirmDialog(parent, "Key must be alphabetic characters only", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showConfirmDialog(parent, "Key must exist and be composed of alphabetic characters only", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
                     keyField.setText(key); // revert to the last key
                 }
             }
@@ -91,10 +94,13 @@ class SettingsDialog extends JDialog {
             }
         });
         
-        setLayout(new BorderLayout());
-        add(enDecLabel, BorderLayout.NORTH);
-        add(keyField, BorderLayout.CENTER);
-        add(saveButton, BorderLayout.LINE_END);
-        add(cancelButton, BorderLayout.SOUTH);
+        setLayout(new GridLayout(3, 1));
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 2));
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+        add(enDecLabel);
+        add(keyField);
+        add(buttonPanel);
     }
 }
