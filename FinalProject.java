@@ -35,6 +35,30 @@ public class FinalProject extends JFrame {
         // Need to reference the parent of these UI components later
         FinalProject parent = this;
 
+        // open encrypt menu
+        encryptItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (key.equals("")) {
+                    JOptionPane.showConfirmDialog(parent, "Please set a key in the \"Settings\" menu.", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                final EDWindow eDWindow = new EDWindow(parent, true, key);
+                eDWindow.setVisible(true);
+            }
+        });
+        
+        // open decrypt menu
+        decryptItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (key.equals("")) {
+                    JOptionPane.showConfirmDialog(parent, "Please set a key in the \"Settings\" menu.", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                final EDWindow eDWindow = new EDWindow(parent, false, key);
+                eDWindow.setVisible(true);
+            }
+        });
+
         // settings option opens SettingsDialog
         settingsItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -59,6 +83,60 @@ public class FinalProject extends JFrame {
 
     public static void main(String[] args) {
         FinalProject fp = new FinalProject();
+    }
+}
+
+class EDWindow extends JDialog {
+    public EDWindow(JFrame parent, boolean encryptMode, String key) {
+        super(parent, (encryptMode ? "Encrypt" : "Decrypt") + " Messages", true);
+        setLocationRelativeTo(parent);
+        setResizable(false);
+        setSize(400, 300);
+        
+        String keyString = (encryptMode ? "Encryption" : "Decryption") + " Key";
+
+        JLabel messageLabel = new JLabel("Message");
+        JLabel resultLabel = new JLabel("Result");
+        JTextArea messageArea = new JTextArea();
+        JTextArea resultArea = new JTextArea();
+        resultArea.setEditable(false);
+        JLabel keyLabel = new JLabel(keyString);
+        JTextField keyField = new JTextField(key);
+        JButton eDButton = new JButton(encryptMode ? "Encrypt" : "Decrypt");
+
+        eDButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String newKey = keyField.getText();
+                int[] keyDigits = keyToNumbers(newKey);
+            }
+        });
+
+        add(messageLabel);
+        add(resultLabel);
+        add(new JScrollPane(messageArea));
+        add(new JScrollPane(resultArea));
+        add(keyLabel);
+        add(new JSeparator());
+        add(keyField);
+        add(new JSeparator());
+        add(eDButton);
+        setLayout(new GridLayout(0, 2));
+    }
+
+    // the first step of the encryption/decryption
+    public int[] keyToNumbers(String k) {
+        String rawDigits = "";
+        k = k.toUpperCase();
+        for (int letter : k.toCharArray()) {
+            rawDigits += letter - 64; // A = 65 in ASCII so we can't use the value directly, but if we subtract 65 then A would be 0, so we subtract 64
+        }
+        
+        int[] digits = new int[rawDigits.length()];
+        for (int i = 0; i < digits.length; i++) {
+            digits[i] = rawDigits.charAt(i) - '0';
+        }
+
+        return digits;
     }
 }
 
