@@ -106,8 +106,26 @@ class EDWindow extends JDialog {
 
         eDButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                String outputString = "";
                 String newKey = keyField.getText();
+                String message = messageArea.getText().toUpperCase();
+                message = message.replaceAll("\\s", "");
                 int[] keyDigits = keyToNumbers(newKey);
+                if (!encryptMode) {
+                    for (int i = 0; i < keyDigits.length; i++) {
+                        keyDigits[i] *= -1;
+                    }
+                    outputString += shiftLetters(message, keyDigits);
+                } else {
+                    String shiftedLetters = shiftLetters(message, keyDigits);
+                    outputString +=  shiftedLetters + "\n\n";
+                    String[] messageChunks = chunk(shiftedLetters, newKey.length());
+                    for (String chunk : messageChunks) {
+                        outputString += chunk + " ";
+                    }
+                    outputString += "\n\n";
+                }
+                resultArea.setText(outputString);
             }
         });
 
@@ -123,7 +141,7 @@ class EDWindow extends JDialog {
         setLayout(new GridLayout(0, 2));
     }
 
-    // the first step of the encryption/decryption
+    // the first step of the encryption
     public int[] keyToNumbers(String k) {
         String rawDigits = "";
         k = k.toUpperCase();
@@ -137,6 +155,43 @@ class EDWindow extends JDialog {
         }
 
         return digits;
+    }
+
+    // the second step of the encryption
+    public String shiftLetters(String message, int[] key) {
+        String output = "";
+        char[] array = message.toCharArray();
+        for (int i = 0; i < array.length; i++) {
+            // System.out.print(array[i] + " + " + key[i % key.length] + " = ");
+            array[i] += key[i % key.length];
+            if (array[i] > 'Z') {
+                array[i] -= 26;
+            } else if (array[i] < 'A') {
+                array[i] += 26;
+            }
+            // System.out.println(array[i]);
+        }
+
+        output = String.valueOf(array);
+        System.out.println("output: " + output);
+        return output;
+    }
+
+    // the third step of the encryption
+    public String[] chunk(String message, int size) {
+        String[] chunks = new String[Math.ceilDiv(message.length(), size)];
+
+        while (message.length() % size != 0) {
+            message += "0";
+        } //System.out.println(message);
+        
+        for (int i = 0; i < chunks.length; i++) {
+            chunks[i] = message.substring(0, size);
+            // System.out.print(chunks[i] + " ");
+            message = message.substring(size, message.length());
+        } //System.out.println(chunks.length);
+
+        return chunks;
     }
 }
 
