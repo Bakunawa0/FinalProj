@@ -119,8 +119,15 @@ class EDWindow extends JDialog {
                 } else {
                     String shiftedLetters = shiftLetters(message, keyDigits);
                     outputString +=  shiftedLetters + "\n\n";
+
                     String[] messageChunks = chunk(shiftedLetters, newKey.length());
                     for (String chunk : messageChunks) {
+                        outputString += chunk + " ";
+                    }
+                    outputString += "\n\n";
+
+                    String[] reversedChunks = flipChunks(messageChunks);
+                    for (String chunk : reversedChunks) {
                         outputString += chunk + " ";
                     }
                     outputString += "\n\n";
@@ -173,7 +180,7 @@ class EDWindow extends JDialog {
         }
 
         output = String.valueOf(array);
-        System.out.println("output: " + output);
+        // System.out.println("output: " + output);
         return output;
     }
 
@@ -191,6 +198,21 @@ class EDWindow extends JDialog {
             message = message.substring(size, message.length());
         } //System.out.println(chunks.length);
 
+        return chunks;
+    }
+
+    // the fourth step of the encryption
+    public String[] flipChunks(String[] chunks) {
+        // String[] reversedChunks = new String[chunks.length];
+        for (int i = 0; i < chunks.length; i++) {
+            String reversedChunk = "";
+            System.out.println(chunks[i]);
+            for (int j = chunks[i].length() - 1; j >= 0; j--) {
+                reversedChunk += chunks[i].charAt(j);
+            }
+            chunks[i] = reversedChunk;
+            System.out.println(reversedChunk);
+        }
         return chunks;
     }
 }
