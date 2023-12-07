@@ -206,12 +206,10 @@ class EDWindow extends JDialog {
         // String[] reversedChunks = new String[chunks.length];
         for (int i = 0; i < chunks.length; i++) {
             String reversedChunk = "";
-            System.out.println(chunks[i]);
             for (int j = chunks[i].length() - 1; j >= 0; j--) {
                 reversedChunk += chunks[i].charAt(j);
             }
             chunks[i] = reversedChunk;
-            System.out.println(reversedChunk);
         }
         return chunks;
     }
