@@ -131,6 +131,10 @@ class EDWindow extends JDialog {
                         outputString += chunk + " ";
                     }
                     outputString += "\n\n";
+
+                    for (String reversedChunk : reversedChunks) {
+                        outputString += reversedChunk;
+                    }
                 }
                 resultArea.setText(outputString);
             }
