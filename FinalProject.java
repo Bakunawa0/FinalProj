@@ -106,10 +106,33 @@ class EDWindow extends JDialog {
 
         eDButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String newKey = keyField.getText();
-                int[] keyDigits = keyToNumbers(newKey);
+                String message = messageArea.getText().toUpperCase();
+                StringBuilder encryptedMessage = new StringBuilder();
+
+                int[] keyDigits = keyToNumbers(keyField.getText().toUpperCase());
+                int keyIndex = 0;
+
+                for (char letter : message.toCharArray()) {
+                    if (Character.isLetter(letter)) {
+                        int originalValue = letter - 'A' + 1;
+                        int encryptedValue = (originalValue + keyDigits[keyIndex] - 1) % 26 + 1;
+                        char encryptedLetter = (char) (encryptedValue - 1 + 'A');
+                        encryptedMessage.append(encryptedLetter);
+
+                        // Move to the next key digit (circularly)
+                        keyIndex = (keyIndex + 1) % keyDigits.length;
+                    } else {
+                        // If the character is not a letter, keep it unchanged
+                        encryptedMessage.append(letter);
+                    }
+                }
+
+                resultArea.setText(encryptedMessage.toString().replaceAll("\\s", ""));
             }
         });
+
+
+
 
         add(messageLabel);
         add(resultLabel);
