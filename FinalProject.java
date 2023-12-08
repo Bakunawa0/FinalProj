@@ -119,19 +119,19 @@ class EDWindow extends JDialog {
                         char encryptedLetter = (char) (encryptedValue - 1 + 'A');
                         encryptedMessage.append(encryptedLetter);
 
-                        // Move to the next key digit (circularly)
+                        // Move to the next key digit (looping back after z)
                         keyIndex = (keyIndex + 1) % keyDigits.length;
-                    } else {
-                        // If the character is not a letter, keep it unchanged
+                    } else if (letter != ' ') { 
+                        //ignore spaces
                         encryptedMessage.append(letter);
                     }
                 }
-
-                resultArea.setText(encryptedMessage.toString().replaceAll("\\s", ""));
+                String formattedMessage = encryptedMessage.toString();
+                formattedMessage = splitThree(formattedMessage, 3, ' ');
+                formattedMessage = addZeros(formattedMessage, 3, '0');
+                resultArea.setText(formattedMessage);
             }
         });
-
-
 
 
         add(messageLabel);
@@ -161,7 +161,30 @@ class EDWindow extends JDialog {
 
         return digits;
     }
+
+    public String splitThree(String input, int groupSize, char delimiter) {
+        StringBuilder output = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            if (i > 0 && i % groupSize == 0) {
+                output.append(delimiter);
+            }
+            output.append(input.charAt(i));
+        }
+        return output.toString();
+    }
+
+    private String addZeros(String input, int groupSize, char filler) {
+        int remainder = input.length() % groupSize;
+        if (remainder != 0) {
+            for (int i = 0; i <= groupSize - remainder; i++) {
+                input += filler;
+            }
+        }
+        return input;
+    }
+
 }
+
 
 class SettingsDialog extends JDialog {
     public SettingsDialog(JFrame parent, String key) {
