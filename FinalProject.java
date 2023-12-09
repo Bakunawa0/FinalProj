@@ -127,8 +127,8 @@ class EDWindow extends JDialog {
                     }
                 }
                 String formattedMessage = encryptedMessage.toString();
-                formattedMessage = splitThree(formattedMessage, 3, ' ');
-                formattedMessage = addZeros(formattedMessage, 3, '0');
+                formattedMessage = addZeros(formattedMessage, keyField.getText().length(), '0');
+                formattedMessage = splitThree(formattedMessage, keyField.getText().length(), ' ');
                 resultArea.setText(formattedMessage);
             }
         });
@@ -176,7 +176,7 @@ class EDWindow extends JDialog {
     private String addZeros(String input, int groupSize, char filler) {
         int remainder = input.length() % groupSize;
         if (remainder != 0) {
-            for (int i = 0; i <= groupSize - remainder; i++) {
+            for (int i = 0; i <= groupSize - remainder - 1; i++) {
                 input += filler;
             }
         }
