@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class FinalProject extends JFrame {
     private static String key = "";
@@ -46,7 +47,7 @@ public class FinalProject extends JFrame {
                 eDWindow.setVisible(true);
             }
         });
-        
+
         // open decrypt menu
         decryptItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -87,12 +88,23 @@ public class FinalProject extends JFrame {
 }
 
 class EDWindow extends JDialog {
+
+    public static ArrayList<Character> keyToChar = new ArrayList<>();
+    public static ArrayList<Character> cryptText = new ArrayList<>();
+
+    public static ArrayList<Integer> numericValues = new ArrayList<>();
+
+    public static ArrayList<Integer> cryptKey = new ArrayList<>();
+
+    public static ArrayList<Character> encrypted = new ArrayList<>();
+    public static ArrayList<Character> tempList = new ArrayList<>();
+
     public EDWindow(JFrame parent, boolean encryptMode, String key) {
         super(parent, (encryptMode ? "Encrypt" : "Decrypt") + " Messages", true);
         setLocationRelativeTo(parent);
         setResizable(false);
         setSize(400, 300);
-        
+
         String keyString = (encryptMode ? "Encryption" : "Decryption") + " Key";
 
         JLabel messageLabel = new JLabel("Message");
@@ -106,8 +118,46 @@ class EDWindow extends JDialog {
 
         eDButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                keyToChar.clear();
+                cryptText.clear();
+                numericValues.clear();
+                cryptKey.clear();
+                encrypted.clear();
+                tempList.clear();
+                resultArea.setText("");
+
                 String newKey = keyField.getText();
-                int[] keyDigits = keyToNumbers(newKey);
+                String message = messageArea.getText();
+                keyToNumbers(newKey);
+                encrypt(message);
+
+                for (int i = 0; i < encrypted.size(); i++) {
+                    resultArea.append(String.valueOf(encrypted.get(i)));
+                }
+
+                resultArea.append("\n");
+                reverseEncrypt();
+
+                for (int i = 0; i < encrypted.size(); i++) {
+                    resultArea.append(String.valueOf(encrypted.get(i)));
+                }
+
+                resultArea.append("\n");
+
+                //adds spaces every 3
+                for(int x=0;x< tempList.size();x++){
+                    resultArea.append(String.valueOf(tempList.get(x)));
+                    if ((x+ 1) % 3 == 0 && x + 1 != tempList.size()) {
+                        resultArea.append(" ");
+                    }
+                }
+
+                resultArea.append("\n");
+
+                //prints joined group
+                for(int x=0;x< tempList.size();x++){
+                    resultArea.append(String.valueOf(tempList.get(x)));
+                }
             }
         });
 
@@ -124,19 +174,86 @@ class EDWindow extends JDialog {
     }
 
     // the first step of the encryption/decryption
-    public int[] keyToNumbers(String k) {
-        String rawDigits = "";
+    public void keyToNumbers(String k) {
+
         k = k.toUpperCase();
-        for (int letter : k.toCharArray()) {
-            rawDigits += letter - 64; // A = 65 in ASCII so we can't use the value directly, but if we subtract 65 then A would be 0, so we subtract 64
-        }
-        
-        int[] digits = new int[rawDigits.length()];
-        for (int i = 0; i < digits.length; i++) {
-            digits[i] = rawDigits.charAt(i) - '0';
+        char[] initial = k.toCharArray();
+
+
+        for (int x = 0; x < initial.length; x++) {
+
+            if (initial[x] == ' ') {
+                continue;
+            }
+            else {
+                keyToChar.add(initial[x]);
+            }
         }
 
-        return digits;
+        for (int x = 0; x < keyToChar.size(); x++) {
+            char currentChar = keyToChar.get(x);
+
+            int numericValue = currentChar - 'A' + 1;
+            numericValues.add(numericValue);
+
+            String numString = String.valueOf(numericValue);
+
+            for (int i = 0; i < numString.length(); i++) {
+                int digit = Character.getNumericValue(numString.charAt(i));
+                cryptKey.add(digit);
+            }
+        }
+    }
+
+    //encrypt conversion
+    public void encrypt(String e) {
+        int keyIndex = 0;
+        e = e.toUpperCase();
+        char[] Text = e.toCharArray();
+
+        //checks if text is letter
+        for (int x = 0; x < Text.length; x++) {
+
+            if (Character.isLetter(Text[x])) {
+                cryptText.add(Text[x]);
+            }
+            else {
+                continue;
+            }
+        }
+
+        //converts currentchar then adds to arraylist
+        for (int x = 0; x < cryptText.size(); x++) {
+            char currentChar = cryptText.get(x);
+
+            // loop back cryptKey
+            int currentKey = cryptKey.get(keyIndex);
+            keyIndex = (keyIndex + 1) % cryptKey.size();
+
+            char converted = (char) ((currentChar - 'A' + currentKey) % 26 + 'A');
+            encrypted.add(converted);
+        }
+    }
+
+    public void reverseEncrypt() {
+
+        ////Grabs the size of the array and checks to divisible by 3 and rounding it to plus 1
+        int size = ((encrypted.size()/3)+1);
+
+        ////AddZero on empty spaces
+        for(int i=(encrypted.size());i<(3*size);i++){
+            encrypted.add('0');
+        }
+
+        /////Start of switcharoo
+        tempList.addAll(encrypted);
+        for (int i = 0; i < size; i++) {
+            int numChange = 3 * (i + 1);
+            if (numChange - 3 < tempList.size() && numChange - 1 < tempList.size()) {
+                tempList.set(numChange - 3, encrypted.get(numChange - 1));
+                tempList.set(numChange - 1, encrypted.get(numChange - 3));
+            }
+        }
     }
 }
 
@@ -171,7 +288,7 @@ class SettingsDialog extends JDialog {
                 dispose();
             }
         });
-        
+
         setLayout(new GridLayout(3, 1));
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new GridLayout(1, 2));
