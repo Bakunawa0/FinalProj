@@ -128,35 +128,40 @@ class EDWindow extends JDialog {
 
                 String newKey = keyField.getText();
                 String message = messageArea.getText();
-                keyToNumbers(newKey);
-                encrypt(message);
+                
+                if (!messageArea.getText().isEmpty() && messageArea.getText().length() >= newKey.length()) {
+                    keyToNumbers(newKey);
+                    encrypt(message);
 
-                for (int i = 0; i < encrypted.size(); i++) {
-                    resultArea.append(String.valueOf(encrypted.get(i)));
-                }
-
-                resultArea.append("\n");
-                reverseEncrypt();
-
-                for (int i = 0; i < encrypted.size(); i++) {
-                    resultArea.append(String.valueOf(encrypted.get(i)));
-                }
-
-                resultArea.append("\n");
-
-                //adds spaces every 3
-                for(int x=0;x< tempList.size();x++){
-                    resultArea.append(String.valueOf(tempList.get(x)));
-                    if ((x+ 1) % 3 == 0 && x + 1 != tempList.size()) {
-                        resultArea.append(" ");
+                    for (int i = 0; i < encrypted.size(); i++) {
+                        resultArea.append(String.valueOf(encrypted.get(i)));
                     }
-                }
 
-                resultArea.append("\n");
+                    resultArea.append("\n");
+                    reverseEncrypt();
 
-                //prints joined group
-                for(int x=0;x< tempList.size();x++){
-                    resultArea.append(String.valueOf(tempList.get(x)));
+                    for (int i = 0; i < encrypted.size(); i++) {
+                        resultArea.append(String.valueOf(encrypted.get(i)));
+                    }
+
+                    resultArea.append("\n");
+
+                    //adds spaces every 3
+                    for(int x=0;x< tempList.size();x++){
+                        resultArea.append(String.valueOf(tempList.get(x)));
+                        if ((x+ 1) % 3 == 0 && x + 1 != tempList.size()) {
+                            resultArea.append(" ");
+                        }
+                    }
+
+                    resultArea.append("\n");
+
+                    //prints joined group
+                    for(int x=0;x< tempList.size();x++){
+                        resultArea.append(String.valueOf(tempList.get(x)));
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(parent,"Invalid Message");
                 }
             }
         });
