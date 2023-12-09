@@ -112,10 +112,16 @@ class EDWindow extends JDialog {
                 message = message.replaceAll("\\s", "");
                 int[] keyDigits = keyToNumbers(newKey);
                 if (!encryptMode) {
+                    String[] messageChunks = chunk(message, newKey.length());
+                    String[] reversedChunks = flipChunks(messageChunks);
+                    message = "";
+                    for (String chunk : reversedChunks) {
+                        message += chunk;
+                    }
                     for (int i = 0; i < keyDigits.length; i++) {
                         keyDigits[i] *= -1;
                     }
-                    outputString += shiftLetters(message, keyDigits);
+                    outputString += shiftLetters(message.replaceAll("0", ""), keyDigits);
                 } else {
                     String shiftedLetters = shiftLetters(message, keyDigits);
                     outputString +=  shiftedLetters + "\n\n";
