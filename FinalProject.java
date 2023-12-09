@@ -133,7 +133,7 @@ class EDWindow extends JDialog {
 
                 String newKey = keyField.getText();
                 String message = messageArea.getText();
-                
+
                 if (!messageArea.getText().isEmpty() && messageArea.getText().length() >= newKey.length()) {
                     keyToNumbers(newKey);
                     encrypt(message);
