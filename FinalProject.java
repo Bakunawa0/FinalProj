@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class FinalProject extends JFrame {
     private static String key = "";
@@ -98,6 +99,8 @@ class EDWindow extends JDialog {
 
     public static ArrayList<Character> encrypted = new ArrayList<>();
     public static ArrayList<Character> tempList = new ArrayList<>();
+    public static ArrayList<Character> encryptWithZero = new ArrayList<>();
+    public static ArrayList<Character> Reverse = new ArrayList<>();
 
     public EDWindow(JFrame parent, boolean encryptMode, String key) {
         super(parent, (encryptMode ? "Encrypt" : "Decrypt") + " Messages", true);
@@ -124,6 +127,8 @@ class EDWindow extends JDialog {
                 cryptKey.clear();
                 encrypted.clear();
                 tempList.clear();
+                encryptWithZero.clear();
+                Reverse.clear();
                 resultArea.setText("");
 
                 String newKey = keyField.getText();
@@ -138,27 +143,29 @@ class EDWindow extends JDialog {
                     }
 
                     resultArea.append("\n");
-                    reverseEncrypt();
+                    reverseEncrypt(newKey);
 
-                    for (int i = 0; i < encrypted.size(); i++) {
-                        resultArea.append(String.valueOf(encrypted.get(i)));
+                    //new reverse
+                    for (int i = 0; i < encryptWithZero.size(); i++) {
+                        resultArea.append(String.valueOf(encryptWithZero.get(i)));
                     }
 
                     resultArea.append("\n");
 
-                    //adds spaces every 3
-                    for(int x=0;x< tempList.size();x++){
-                        resultArea.append(String.valueOf(tempList.get(x)));
-                        if ((x+ 1) % 3 == 0 && x + 1 != tempList.size()) {
+
+                    for (int i = 0; i < Reverse.size(); i++) {
+                        resultArea.append(String.valueOf(Reverse.get(i)));
+                        if ((i + 1) % newKey.length() == 0 && i + 1 != Reverse.size()) {
                             resultArea.append(" ");
                         }
                     }
 
+
                     resultArea.append("\n");
 
                     //prints joined group
-                    for(int x=0;x< tempList.size();x++){
-                        resultArea.append(String.valueOf(tempList.get(x)));
+                    for(int x=0;x< Reverse.size();x++){
+                        resultArea.append(String.valueOf(Reverse.get(x)));
                     }
                 } else {
                     JOptionPane.showMessageDialog(parent,"Invalid Message");
@@ -240,24 +247,39 @@ class EDWindow extends JDialog {
         }
     }
 
-    public void reverseEncrypt() {
+    public void reverseEncrypt(String q) {
 
-        ////Grabs the size of the array and checks to divisible by 3 and rounding it to plus 1
-        int size = ((encrypted.size()/3)+1);
+        int keyElement = q.length();
+        int groupSize = (encrypted.size() + keyElement - 1) / keyElement;
 
-        ////AddZero on empty spaces
-        for(int i=(encrypted.size());i<(3*size);i++){
-            encrypted.add('0');
+        encryptWithZero.addAll(encrypted);
+        if (encryptWithZero.size() % keyElement != 0) {
+            for (int i = encryptWithZero.size(); i < keyElement * groupSize; i++) {
+                encryptWithZero.add('0');
+            }
         }
 
-        /////Start of switcharoo
-        tempList.addAll(encrypted);
-        for (int i = 0; i < size; i++) {
-            int numChange = 3 * (i + 1);
-            if (numChange - 3 < tempList.size() && numChange - 1 < tempList.size()) {
-                tempList.set(numChange - 3, encrypted.get(numChange - 1));
-                tempList.set(numChange - 1, encrypted.get(numChange - 3));
-            }
+        Reverse.addAll(encryptWithZero);
+        for (int i = 0; i < groupSize; i++) {
+            reverseMethod(keyElement, i);
+        }
+    }
+
+    public static void reverseMethod(int keyElement, int num) {
+        int startNum = num*keyElement;
+        int endNum = ((num+1)*keyElement)-1;
+
+        for (int i = startNum; i <= endNum; i++) {
+            tempList.add(Reverse.get(i));
+        }
+        Collections.reverse(tempList);
+
+        for (int i = startNum; i <= endNum; i++) {
+            Reverse.set(i, tempList.get(i - startNum));
+        }
+
+        for (int i = startNum; i <= endNum; i++) {
+            System.out.print(Reverse.get(i));
         }
     }
 }
