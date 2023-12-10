@@ -86,14 +86,14 @@ public class FinalProject extends JFrame {
     }
 }
 
-class EDWindow extends JDialog {
+class EDWindow extends JDialog { // both the encrypt and decrypt windows look the same so we use the same class for both
     public EDWindow(JFrame parent, boolean encryptMode, String key) {
-        super(parent, (encryptMode ? "Encrypt" : "Decrypt") + " Messages", true);
+        super(parent, (encryptMode ? "Encrypt" : "Decrypt") + " Messages", true); // but depending on the value of encryptMode we change some aspects
         setLocationRelativeTo(parent);
         setResizable(false);
         setSize(400, 300);
         
-        String keyString = (encryptMode ? "Encryption" : "Decryption") + " Key";
+        String keyString = (encryptMode ? "Encryption" : "Decryption") + " Key"; // the text that will label the keyField
 
         JLabel messageLabel = new JLabel("Message");
         JLabel resultLabel = new JLabel("Result");
@@ -102,47 +102,47 @@ class EDWindow extends JDialog {
         resultArea.setEditable(false);
         JLabel keyLabel = new JLabel(keyString);
         JTextField keyField = new JTextField(key);
-        JButton eDButton = new JButton(encryptMode ? "Encrypt" : "Decrypt");
+        JButton eDButton = new JButton(encryptMode ? "Encrypt" : "Decrypt"); // what the button says also needs to change
 
         eDButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String outputString = "";
-                String newKey = keyField.getText();
-                String message = messageArea.getText().toUpperCase();
-                message = message.replaceAll("\\s", "");
-                int[] keyDigits = keyToNumbers(newKey);
-                if (!encryptMode) {
-                    String[] messageChunks = chunk(message, newKey.length());
-                    String[] reversedChunks = flipChunks(messageChunks);
-                    message = "";
-                    for (String chunk : reversedChunks) {
-                        message += chunk;
+                String outputString = ""; // this string will hold the output text
+                String newKey = keyField.getText(); // if the key is different than the one set in the Settings, this will update the value
+                String message = messageArea.getText().toUpperCase(); // store the message as all upper case so we don't have to deal with lower case
+                message = message.replaceAll("\\s", ""); // use regular expression to replace all whitespace (whitespace is spaces, newlines, and tabs) with nothing, effectively deleting all whitespace
+                int[] keyDigits = keyToNumbers(newKey); // convert the key into numbers
+                if (!encryptMode) { // decrypt mode
+                    String[] messageChunks = chunk(message, newKey.length()); // break the message into chunks the length of the key
+                    String[] reversedChunks = flipChunks(messageChunks); // reverse the chunks
+                    message = ""; // blank out the message so we can overwrite it
+                    for (String chunk : reversedChunks) { // for every chunk in reversedChunks
+                        message += chunk; // add it to the message without gaps. now message holds all the chunks stuck together
                     }
                     for (int i = 0; i < keyDigits.length; i++) {
-                        keyDigits[i] *= -1;
+                        keyDigits[i] *= -1; // multiply every digit in the key by -1 so that shiftLetters will subtract instead of add
                     }
-                    outputString += shiftLetters(message.replaceAll("0", ""), keyDigits);
-                } else {
-                    String shiftedLetters = shiftLetters(message, keyDigits);
-                    outputString +=  shiftedLetters + "\n\n";
+                    outputString += shiftLetters(message.replaceAll("0", ""), keyDigits); // shift the letters using keyDigits and at the same time removing the 0s
+                } else { // encrypt mode
+                    String shiftedLetters = shiftLetters(message, keyDigits); // shift the letters using keyDigits
+                    outputString +=  shiftedLetters + "\n\n"; // put it in the output
 
-                    String[] messageChunks = chunk(shiftedLetters, newKey.length());
+                    String[] messageChunks = chunk(shiftedLetters, newKey.length()); // break shiftedLetters into chunks the length of the key
                     for (String chunk : messageChunks) {
-                        outputString += chunk + " ";
+                        outputString += chunk + " "; // put the chunks in the output seperated by spaces
                     }
                     outputString += "\n\n";
 
-                    String[] reversedChunks = flipChunks(messageChunks);
+                    String[] reversedChunks = flipChunks(messageChunks); // reverse the chunks
                     for (String chunk : reversedChunks) {
-                        outputString += chunk + " ";
+                        outputString += chunk + " "; // put the reversed chunks in the output too
                     }
                     outputString += "\n\n";
 
                     for (String reversedChunk : reversedChunks) {
-                        outputString += reversedChunk;
+                        outputString += reversedChunk; // stick all the reversed chunks together
                     }
                 }
-                resultArea.setText(outputString);
+                resultArea.setText(outputString); // display the output
             }
         });
 
@@ -160,53 +160,62 @@ class EDWindow extends JDialog {
 
     // the first step of the encryption
     public int[] keyToNumbers(String k) {
-        String rawDigits = "";
-        k = k.toUpperCase();
+        String rawDigits = ""; // stores the raw values of the key
+        k = k.toUpperCase(); // so we don't have to account for lower case
         for (int letter : k.toCharArray()) {
             rawDigits += letter - 64; // A = 65 in ASCII so we can't use the value directly, but if we subtract 65 then A would be 0, so we subtract 64
         }
         
-        int[] digits = new int[rawDigits.length()];
-        for (int i = 0; i < digits.length; i++) {
-            digits[i] = rawDigits.charAt(i) - '0';
-        }
+        int[] digits = new int[rawDigits.length()]; // this will store the actual digits we will use
+        for (int i = 0; i < digits.length; i++) { // go through the array and the string character by character, thus breaking 19 into 1 9 for example
+            digits[i] = rawDigits.charAt(i) - '0'; // the values in the string are characters so like before we subtract '0' to make them numbers
+        } // now every item in the array is a single digit
 
         return digits;
     }
 
     // the second step of the encryption
     public String shiftLetters(String message, int[] key) {
-        String output = "";
-        char[] array = message.toCharArray();
-        for (int i = 0; i < array.length; i++) {
+        String output = ""; // this will hold the shifted result
+        char[] array = message.toCharArray(); // this makes it so that we can modify individual letters more easily than with a string
+        for (int i = 0; i < array.length; i++) { // go through the array
             // System.out.print(array[i] + " + " + key[i % key.length] + " = ");
-            array[i] += key[i % key.length];
-            if (array[i] > 'Z') {
-                array[i] -= 26;
-            } else if (array[i] < 'A') {
-                array[i] += 26;
+            array[i] += key[i % key.length]; // shift the letter at i by the key at i. the % ensures that the key index is never greater than key.length and instead loops back to 0 if i = key.length
+            if (array[i] > 'Z') { // if the shift put us past Z
+                array[i] -= 26; // subtract 26 to get back to the letters
+            } else if (array[i] < 'A') { // if the shift put us before A
+                array[i] += 26; // add 26 to get back to the letters
             }
             // System.out.println(array[i]);
         }
 
-        output = String.valueOf(array);
+        output = String.valueOf(array); // convert the array back into a string
         // System.out.println("output: " + output);
         return output;
     }
 
     // the third step of the encryption
     public String[] chunk(String message, int size) {
-        String[] chunks = new String[Math.ceilDiv(message.length(), size)];
-
-        while (message.length() % size != 0) {
-            message += "0";
+        String[] chunks = new String[Math.ceilDiv(message.length(), size)]; // Math.ceilDiv will divide its arguments and round up to the nearest integer. this will give an array with the appropriate number of chunks
+         // the 0 padding step
+        while (message.length() % size != 0) { // as long as the length of the message doesn't evenly divide by size
+            message += "0"; // add 0s
         } //System.out.println(message);
         
-        for (int i = 0; i < chunks.length; i++) {
-            chunks[i] = message.substring(0, size);
+        for (int i = 0; i < chunks.length; i++) { // go through the chunks
+            chunks[i] = message.substring(0, size); // take a substring from the message that goes from the first character to size, creating a chunk
             // System.out.print(chunks[i] + " ");
-            message = message.substring(size, message.length());
-        } //System.out.println(chunks.length);
+            message = message.substring(size, message.length()); // take a substring that goes from size to the end of the string and set message to that, deleting the chunk we just made from message
+        }
+        /*
+         * Visualization: let's say the size is 4
+         * THISISASECRET000
+         * |0 |size (the first argument counts the first character as 0 while the second argument counts the first character as 1)
+         * so "THIS" becomes a chunk and gets stored in chunks
+         * THISISASECRET000
+         *     |size      |message.length()
+         * so "ISASECRET000" gets stored back into message
+         */
 
         return chunks;
     }
@@ -215,11 +224,11 @@ class EDWindow extends JDialog {
     public String[] flipChunks(String[] chunks) {
         // String[] reversedChunks = new String[chunks.length];
         for (int i = 0; i < chunks.length; i++) {
-            String reversedChunk = "";
-            for (int j = chunks[i].length() - 1; j >= 0; j--) {
-                reversedChunk += chunks[i].charAt(j);
+            String reversedChunk = ""; // this will hold the reversed string
+            for (int j = chunks[i].length() - 1; j >= 0; j--) { // go backwards through the string
+                reversedChunk += chunks[i].charAt(j); // store the characters in reverse order in reversedChunk
             }
-            chunks[i] = reversedChunk;
+            chunks[i] = reversedChunk; // replace the chunk there with the reversed chunk
         }
         return chunks;
     }
