@@ -102,6 +102,7 @@ class EDWindow extends JDialog { // both the encrypt and decrypt windows look th
         resultArea.setEditable(false);
         JLabel keyLabel = new JLabel(keyString);
         JTextField keyField = new JTextField(key);
+        keyField.setEditable(false);
         JButton eDButton = new JButton(encryptMode ? "Encrypt" : "Decrypt"); // what the button says also needs to change
 
         eDButton.addActionListener(new ActionListener() {
@@ -111,6 +112,14 @@ class EDWindow extends JDialog { // both the encrypt and decrypt windows look th
                 String message = messageArea.getText().toUpperCase(); // store the message as all upper case so we don't have to deal with lower case
                 message = message.replaceAll("\\s", ""); // use regular expression to replace all whitespace (whitespace is spaces, newlines, and tabs) with nothing, effectively deleting all whitespace
                 int[] keyDigits = keyToNumbers(newKey); // convert the key into numbers
+                if (message.matches("")) {
+                    JOptionPane.showConfirmDialog(parent, "Message must exist", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (message.length() < newKey.length()) {
+                    JOptionPane.showConfirmDialog(parent, "Message length is less than length of the key", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 if (!encryptMode) { // decrypt mode
                     String[] messageChunks = chunk(message, newKey.length()); // break the message into chunks the length of the key
                     String[] reversedChunks = flipChunks(messageChunks); // reverse the chunks
@@ -123,6 +132,10 @@ class EDWindow extends JDialog { // both the encrypt and decrypt windows look th
                     }
                     outputString += shiftLetters(message.replaceAll("0", ""), keyDigits); // shift the letters using keyDigits and at the same time removing the 0s
                 } else { // encrypt mode
+                    if (!message.matches("[A-Za-z]+")) {
+                        JOptionPane.showConfirmDialog(parent, "Message must be composed of alphabetic characters only", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                     String shiftedLetters = shiftLetters(message, keyDigits); // shift the letters using keyDigits
                     outputString +=  shiftedLetters + "\n\n"; // put it in the output
 
