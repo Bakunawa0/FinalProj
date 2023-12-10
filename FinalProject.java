@@ -126,7 +126,7 @@ class EDWindow extends JDialog { // both the encrypt and decrypt windows look th
                     String shiftedLetters = shiftLetters(message, keyDigits); // shift the letters using keyDigits
                     outputString +=  shiftedLetters + "\n\n"; // put it in the output
 
-                    String[] messageChunks = chunk(shiftedLetters, newKey.length()); // break shiftedLetters into chunks the length of the key
+                    String[] messageChunks = chunk(shiftedLetters, newKey.length()); // break shiftedLetters into chunks the length of the key. also add 0s
                     for (String chunk : messageChunks) {
                         outputString += chunk + " "; // put the chunks in the output seperated by spaces
                     }
