@@ -102,7 +102,7 @@ class EDWindow extends JDialog { // both the encrypt and decrypt windows look th
         resultArea.setEditable(false);
         JLabel keyLabel = new JLabel(keyString);
         JTextField keyField = new JTextField(key);
-        keyField.setEditable(false);
+        keyField.setEditable(true);
         JButton eDButton = new JButton(encryptMode ? "Encrypt" : "Decrypt"); // what the button says also needs to change
 
         eDButton.addActionListener(new ActionListener() {
@@ -112,6 +112,13 @@ class EDWindow extends JDialog { // both the encrypt and decrypt windows look th
                 String message = messageArea.getText().toUpperCase(); // store the message as all upper case so we don't have to deal with lower case
                 message = message.replaceAll("\\s", ""); // use regular expression to replace all whitespace (whitespace is spaces, newlines, and tabs) with nothing, effectively deleting all whitespace
                 int[] keyDigits = keyToNumbers(newKey); // convert the key into numbers
+                if (newKey.matches("")){
+                    JOptionPane.showConfirmDialog(parent, "Key must exist", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                    return;
+                } else if (!newKey.matches("[A-Za-z]+")) {
+                    JOptionPane.showConfirmDialog(parent, "Key should have no spaces and must be alphabetic only", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 if (message.matches("")) {
                     JOptionPane.showConfirmDialog(parent, "Message must exist", "Error", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE);
                     return;
